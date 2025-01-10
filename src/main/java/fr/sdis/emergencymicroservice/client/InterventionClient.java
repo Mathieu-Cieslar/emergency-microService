@@ -3,49 +3,46 @@ package fr.sdis.emergencymicroservice.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.sdis.emergencymicroservice.model.Caserne;
+import fr.sdis.emergencymicroservice.model.Feu;
 import fr.sdis.emergencymicroservice.model.Intervention;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
-@Component
-
-public class CaserneClient {
-    @Value("${api.url}/caserne")
+public class InterventionClient {
+    @Value("${api.url}/intervention")
     private String apiUrl;
 
 
     private final RestTemplate restTemplate;
-    public CaserneClient(RestTemplate restTemplate) {
+    public InterventionClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
     ObjectMapper objectMapper = new ObjectMapper();
 
-    public List<Caserne> getCasernes() {
+    public List<Intervention> getInterventions() {
         String reponse = null;
         try{
             reponse = restTemplate.getForObject(apiUrl, String.class);
             System.out.println(reponse);
         } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la récupération des casernes", e);
+            throw new RuntimeException("Erreur lors de la récupération des interventions", e);
         }
 
         try {
             // Désérialisation
-            return objectMapper.readValue(reponse, new TypeReference<List<Caserne>>() {});
+            return objectMapper.readValue(reponse, new TypeReference<List<Intervention>>() {});
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la conversion en JSON", e);
         }
     }
 
-    public void createCaserne(Caserne caserne) {
+    public void createIntervention(Intervention intervention) {
         String json = null;
         try {
-            json = objectMapper.writeValueAsString(caserne);
+            json = objectMapper.writeValueAsString(intervention);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Erreur lors de la conversion en JSON", e);
         }
@@ -55,7 +52,7 @@ public class CaserneClient {
             System.out.println("Post success");
 
         } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la création d'une caserne", e);
+            throw new RuntimeException("Erreur lors de la création d'un intervention", e);
         }
     }
 }

@@ -4,7 +4,10 @@ import lombok.*;
 
 @Getter @Setter @AllArgsConstructor @NoArgsConstructor @ToString
 public class Caserne {
-    private int idCamion;
-    private int idIntervention;
-    private int tempsIntervention;
+    private int id;
+    private double coorX;
+    private double coorY;
+    private Integer nbCamion;
+    private Integer nbPompier;
+    private String nom;
 }

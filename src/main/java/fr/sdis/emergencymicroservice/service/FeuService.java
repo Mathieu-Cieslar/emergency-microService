@@ -4,6 +4,7 @@ import fr.sdis.emergencymicroservice.client.CapteurClient;
 import fr.sdis.emergencymicroservice.client.FeuClient;
 import fr.sdis.emergencymicroservice.model.Capteur;
 import fr.sdis.emergencymicroservice.model.Feu;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,17 +12,15 @@ import java.util.List;
 @Service
 public class FeuService {
 
-    private final FeuClient feuClient;
-    private final CapteurClient capteurClient;
+    @Autowired
+    FeuClient feuClient;
+    @Autowired
+    CapteurClient capteurClient;
+
     // Constante pour la conversion des degrés en radians
     private static final double DEG_TO_RAD = Math.PI / 180.0;
 
-    public FeuService(FeuClient feuClient, CapteurClient capteurClient) {
-        this.feuClient = feuClient;
-        this.capteurClient = capteurClient;
-    }
-
-    public void createFeuByCaptors() {
+    public Feu createFeuByCaptors() {
         List<Capteur> capteurs = capteurClient.getCapteurs();
         capteurs.sort((c1, c2) -> Double.compare(c2.getValeur(), c1.getValeur()));
         //trie de ma liste capteurs en fonction de l'intensite
@@ -31,6 +30,9 @@ public class FeuService {
                 capteurs.get(1).getCoorX(), capteurs.get(1).getCoorY(), getDistanceByIntensite(capteurs.get(1).getValeur()),
                 capteurs.get(2).getCoorX(), capteurs.get(2).getCoorY(), getDistanceByIntensite(capteurs.get(2).getValeur()));
         System.out.println("Coordonnées triangulées : " + coordonnees[0] + " " + coordonnees[1]);
+
+        // Création d'un feu avec les coordonnées triangulées et l'intensité moyenne des 3 capteurs
+        return new Feu(0, coordonnees[0], coordonnees[1], 10);
 
     }
 
@@ -82,6 +84,7 @@ public class FeuService {
         // Retourner la distance en mètres
         return R * c;
     }
+
 
     public int getDistanceByIntensite(int intensite){
         int distance = 0;
