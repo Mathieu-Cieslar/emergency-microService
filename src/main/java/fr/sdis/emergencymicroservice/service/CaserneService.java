@@ -29,6 +29,19 @@ public class CaserneService {
     public Caserne getCaserneProche(double coorX, double coorY) {
         List<Caserne> casernes = caserneClient.getCasernes();
         System.out.println("CaserneService: getCaserneProche: casernes: " + casernes);
-        return null;
+        // Caserne la plus proche
+        Caserne caserneProche = null;
+        for (Caserne caserne : casernes) {
+            if (caserneProche == null) {
+                caserneProche = caserne;
+            } else {
+                if (distance(coorX, coorY, caserne.getCoorX(), caserne.getCoorY()) < distance(coorX, coorY, caserneProche.getCoorX(), caserneProche.getCoorY())) {
+                    //if(caserne.getNbCamion() > 0){
+                        caserneProche = caserne;
+                    //}
+                }
+            }
+        }
+        return caserneProche;
     }
 }

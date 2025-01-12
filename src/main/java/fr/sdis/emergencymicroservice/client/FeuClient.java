@@ -40,7 +40,7 @@ public class FeuClient {
         }
     }
 
-    public void createFeu(Feu feu) {
+    public Feu createFeu(Feu feu) {
         String json = null;
         try {
             json = objectMapper.writeValueAsString(feu);
@@ -48,9 +48,12 @@ public class FeuClient {
             throw new RuntimeException("Erreur lors de la conversion en JSON", e);
         }
 
+        String objetFeu = null;
         try{
-            restTemplate.postForObject(apiUrl, json, String.class);
+            objetFeu = restTemplate.postForObject(apiUrl, json, String.class);
             System.out.println("Post success");
+            System.out.println(objetFeu);
+            return objectMapper.readValue(objetFeu, Feu.class);
 
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la création d'un feu", e);

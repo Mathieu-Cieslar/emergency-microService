@@ -32,7 +32,7 @@ public class FeuService {
         System.out.println("Coordonnées triangulées : " + coordonnees[0] + " " + coordonnees[1]);
 
         // Création d'un feu avec les coordonnées triangulées et l'intensité moyenne des 3 capteurs
-        return new Feu(0, coordonnees[0], coordonnees[1], 10);
+        return new Feu(0, coordonnees[0], coordonnees[1], 10, null);
 
     }
 

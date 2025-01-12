@@ -2,6 +2,8 @@ package fr.sdis.emergencymicroservice.model;
 
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,4 +15,6 @@ public class Intervention {
     private Camion camion;
     private Feu feu;
     private Caserne caserne;
+    private List<Double[]> trajet;
+    private Integer tempsTrajet;
 }

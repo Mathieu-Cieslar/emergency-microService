@@ -6,10 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.sdis.emergencymicroservice.model.Feu;
 import fr.sdis.emergencymicroservice.model.Intervention;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
+@Component
 public class InterventionClient {
     @Value("${api.url}/intervention")
     private String apiUrl;
@@ -43,6 +45,7 @@ public class InterventionClient {
         String json = null;
         try {
             json = objectMapper.writeValueAsString(intervention);
+            System.out.println(json);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Erreur lors de la conversion en JSON", e);
         }
