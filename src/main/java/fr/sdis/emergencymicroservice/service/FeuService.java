@@ -20,21 +20,31 @@ public class FeuService {
     // Constante pour la conversion des degrés en radians
     private static final double DEG_TO_RAD = Math.PI / 180.0;
 
-    public Feu createFeuByCaptors() {
+    public List<Feu> createFeuByCaptors() {
+        List<Feu> feux;
         List<Capteur> capteurs = capteurClient.getCapteurs();
 
         capteurs.sort((c1, c2) -> Double.compare(c2.getValeur(), c1.getValeur()));
-        //trie de ma liste capteurs en fonction de l'intensite
-        System.out.println(capteurs);
-        if((capteurs.get(0).getValeur() == 0)||(capteurs.get(1).getValeur() == 0)||(capteurs.get(2).getValeur() == 0)){
-            return null;
+        //Trier la liste pour n'avoir que des valeurs a 9
+        capteurs = capteurs.stream().filter(c -> c.getValeur() == 9).toList();
+
+        Integer nbFeux = capteurs.size() / 3;
+        for (int i = 0; i < nbFeux; i++) {
+            //On prend le premier capteur et on prend les 2 suiv les plus proches
+            for (Capteur capteur : capteurs) {
+                List<Capteur> capteursProches = capteurs.stream().filter(c -> c != capteur).toList();
+                capteursProches.sort((c1, c2) -> Double.compare(haversine(capteur.getCoorX(), capteur.getCoorY(), c1.getCoorX(), c1.getCoorY()), haversine(capteur.getCoorX(), capteur.getCoorY(), c2.getCoorX(), c2.getCoorY())));
+                capteursProches = capteursProches.subList(0, 2);
+                Feu feu = createFeuByCaptors(capteur, capteursProches);
+                feuClient.createFeu(feu);
+            }
+            //on prend les 3 premiers capteurs pour faire une triangulation
+            double[] coordonnees = triangulate(capteurs.get(0).getCoorX(), capteurs.get(0).getCoorY(), getDistanceByIntensite(capteurs.get(0).getValeur()),
+                    capteurs.get(1).getCoorX(), capteurs.get(1).getCoorY(), getDistanceByIntensite(capteurs.get(1).getValeur()),
+                    capteurs.get(2).getCoorX(), capteurs.get(2).getCoorY(), getDistanceByIntensite(capteurs.get(2).getValeur()));
+            System.out.println("Coordonnées triangulées : " + coordonnees[0] + " " + coordonnees[1]);
         }
 
-        //on prend les 3 premiers capteurs pour faire une triangulation
-        double[] coordonnees = triangulate(capteurs.get(0).getCoorX(), capteurs.get(0).getCoorY(), getDistanceByIntensite(capteurs.get(0).getValeur()),
-                capteurs.get(1).getCoorX(), capteurs.get(1).getCoorY(), getDistanceByIntensite(capteurs.get(1).getValeur()),
-                capteurs.get(2).getCoorX(), capteurs.get(2).getCoorY(), getDistanceByIntensite(capteurs.get(2).getValeur()));
-        System.out.println("Coordonnées triangulées : " + coordonnees[0] + " " + coordonnees[1]);
 
         // Création d'un feu avec les coordonnées triangulées et l'intensité moyenne des 3 capteurs
         return new Feu(0, coordonnees[0], coordonnees[1], 10, null, true);

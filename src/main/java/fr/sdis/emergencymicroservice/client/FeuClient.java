@@ -60,7 +60,7 @@ public class FeuClient {
         }
     }
 
-    public Feu getFeuxIsActif() {
+    public List<Feu> getFeuxIsActif() {
         String reponse = null;
         try{
             reponse = restTemplate.getForObject(apiUrl+"/progress", String.class);
