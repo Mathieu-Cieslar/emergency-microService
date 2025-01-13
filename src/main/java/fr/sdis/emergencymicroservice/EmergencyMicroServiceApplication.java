@@ -22,7 +22,15 @@ public class EmergencyMicroServiceApplication {
 	public static void main(String[] args) {
 		var context = SpringApplication.run(EmergencyMicroServiceApplication.class, args);
 		InterventionService interventionService = context.getBean(InterventionService.class);
-		interventionService.CreateInterventionByCaptors();
+		while (true) {
+			interventionService.CreateInterventionByCaptors();
+			System.out.println("createRandomCapteurs");
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Bean

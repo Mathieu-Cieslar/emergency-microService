@@ -25,6 +25,10 @@ public class FeuService {
         capteurs.sort((c1, c2) -> Double.compare(c2.getValeur(), c1.getValeur()));
         //trie de ma liste capteurs en fonction de l'intensite
         System.out.println(capteurs);
+        if((capteurs.get(0).getValeur() == 0)||(capteurs.get(1).getValeur() == 0)||(capteurs.get(2).getValeur() == 0)){
+            return null;
+        }
+
         //on prend les 3 premiers capteurs pour faire une triangulation
         double[] coordonnees = triangulate(capteurs.get(0).getCoorX(), capteurs.get(0).getCoorY(), getDistanceByIntensite(capteurs.get(0).getValeur()),
                 capteurs.get(1).getCoorX(), capteurs.get(1).getCoorY(), getDistanceByIntensite(capteurs.get(1).getValeur()),
@@ -32,7 +36,7 @@ public class FeuService {
         System.out.println("Coordonnées triangulées : " + coordonnees[0] + " " + coordonnees[1]);
 
         // Création d'un feu avec les coordonnées triangulées et l'intensité moyenne des 3 capteurs
-        return new Feu(0, coordonnees[0], coordonnees[1], 10, null);
+        return new Feu(0, coordonnees[0], coordonnees[1], 10, null, true);
 
     }
 

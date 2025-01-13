@@ -59,4 +59,21 @@ public class FeuClient {
             throw new RuntimeException("Erreur lors de la création d'un feu", e);
         }
     }
+
+    public Feu getFeuxIsActif() {
+        String reponse = null;
+        try{
+            reponse = restTemplate.getForObject(apiUrl+"/progress", String.class);
+            System.out.println(reponse);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la récupération des is Progress feux", e);
+        }
+
+        try {
+            // Désérialisation
+            return objectMapper.readValue(reponse, new TypeReference<Feu>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la conversion en JSON", e);
+        }
+    }
 }

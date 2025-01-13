@@ -31,10 +31,23 @@ public class InterventionService {
 
     public void CreateInterventionByCaptors() {
 
-        Feu feu = feuService.createFeuByCaptors(); //sup
-        System.out.println("Feu : " + feu);
 
-        Feu feuBDD = feuClient.createFeu(feu);
+        Feu reponse = feuClient.getFeuxIsActif();
+
+        Feu feu = null;
+        Feu feuBDD = null;
+
+        if (reponse == null) {
+            feu = feuService.createFeuByCaptors(); //sup
+            System.out.println("Feu : " + feu);
+            if (feu == null) {
+                return;
+            }
+            feuBDD = feuClient.createFeu(feu);
+        }else{
+            return;
+        }
+
 
         Caserne caserne = caserneService.getCaserneProche(feu.getCoorX(), feu.getCoorY()); //sup
         System.out.println("Caserne la plus proche : " + caserne);
@@ -47,7 +60,7 @@ public class InterventionService {
         }
 
         //creer une intervention
-        Intervention intervention = new Intervention(0,camion, feuBDD, caserne, trajet, 30000); //sup
+        Intervention intervention = new Intervention(0,camion, feuBDD, caserne, trajet, 30000, null);
         System.out.println("Intervention : " + intervention);
 
         interventionClient.createIntervention(intervention);

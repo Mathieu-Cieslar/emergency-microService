@@ -17,4 +17,5 @@ public class Intervention {
     private Caserne caserne;
     private List<Double[]> trajet;
     private Integer tempsTrajet;
+    private String dateIntervention;
 }
