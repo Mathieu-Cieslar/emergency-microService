@@ -36,9 +36,9 @@ public class CaserneService {
                 caserneProche = caserne;
             } else {
                 if (distance(coorX, coorY, caserne.getCoorX(), caserne.getCoorY()) < distance(coorX, coorY, caserneProche.getCoorX(), caserneProche.getCoorY())) {
-                    //if(caserne.getNbCamion() > 0){
+                    if(caserne.getNbCamion() > 0){
                         caserneProche = caserne;
-                    //}
+                    }
                 }
             }
         }
