@@ -7,6 +7,7 @@ import fr.sdis.emergencymicroservice.model.Feu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,33 +22,22 @@ public class FeuService {
     private static final double DEG_TO_RAD = Math.PI / 180.0;
 
     public List<Feu> createFeuByCaptors() {
-        List<Feu> feux;
+        List<Feu> feux = new ArrayList<>();
         List<Capteur> capteurs = capteurClient.getCapteurs();
 
         capteurs.sort((c1, c2) -> Double.compare(c2.getValeur(), c1.getValeur()));
         //Trier la liste pour n'avoir que des valeurs a 9
         capteurs = capteurs.stream().filter(c -> c.getValeur() == 9).toList();
 
-        Integer nbFeux = capteurs.size() / 3;
-        for (int i = 0; i < nbFeux; i++) {
-            //On prend le premier capteur et on prend les 2 suiv les plus proches
-            for (Capteur capteur : capteurs) {
-                List<Capteur> capteursProches = capteurs.stream().filter(c -> c != capteur).toList();
-                capteursProches.sort((c1, c2) -> Double.compare(haversine(capteur.getCoorX(), capteur.getCoorY(), c1.getCoorX(), c1.getCoorY()), haversine(capteur.getCoorX(), capteur.getCoorY(), c2.getCoorX(), c2.getCoorY())));
-                capteursProches = capteursProches.subList(0, 2);
-                Feu feu = createFeuByCaptors(capteur, capteursProches);
-                feuClient.createFeu(feu);
-            }
-            //on prend les 3 premiers capteurs pour faire une triangulation
-            double[] coordonnees = triangulate(capteurs.get(0).getCoorX(), capteurs.get(0).getCoorY(), getDistanceByIntensite(capteurs.get(0).getValeur()),
-                    capteurs.get(1).getCoorX(), capteurs.get(1).getCoorY(), getDistanceByIntensite(capteurs.get(1).getValeur()),
-                    capteurs.get(2).getCoorX(), capteurs.get(2).getCoorY(), getDistanceByIntensite(capteurs.get(2).getValeur()));
-            System.out.println("Coordonnées triangulées : " + coordonnees[0] + " " + coordonnees[1]);
+        for(Capteur capteur : capteurs){
+            System.out.println("Capteur : " + capteur);
+            //rajouter un feu dans le feux
+            feux.add(new Feu(0, capteur.getCoorX(), capteur.getCoorY(), 5, null, true));
         }
 
 
         // Création d'un feu avec les coordonnées triangulées et l'intensité moyenne des 3 capteurs
-        return new Feu(0, coordonnees[0], coordonnees[1], 10, null, true);
+        return feux;
 
     }
 
@@ -75,29 +65,17 @@ public class FeuService {
         return new double[]{x, y};
     }
 
-    // Fonction pour calculer la distance entre deux points (en mètres) en utilisant la formule Haversine
-    private static double haversine(double lat1, double lon1, double lat2, double lon2) {
-        // Rayon de la Terre en mètres
-        double R = 6371000;
-
-        // Convertir les degrés en radians
-        lat1 = lat1 * DEG_TO_RAD;
-        lon1 = lon1 * DEG_TO_RAD;
-        lat2 = lat2 * DEG_TO_RAD;
-        lon2 = lon2 * DEG_TO_RAD;
-
-        // Calculer la différence entre les latitudes et longitudes
-        double dlat = lat2 - lat1;
-        double dlon = lon2 - lon1;
-
-        // Formule de Haversine
-        double a = Math.sin(dlat / 2) * Math.sin(dlat / 2) +
-                Math.cos(lat1) * Math.cos(lat2) *
-                        Math.sin(dlon / 2) * Math.sin(dlon / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        // Retourner la distance en mètres
-        return R * c;
+    public static double distance(double lat1, double lon1, double lat2, double lon2) {
+        if ((lat1 == lat2) && (lon1 == lon2)) {
+            return 0;
+        } else {
+            double theta = lon1 - lon2;
+            double dist = Math.sin(Math.toRadians(lat1)) * Math.sin(Math.toRadians(lat2)) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.cos(Math.toRadians(theta));
+            dist = Math.acos(dist);
+            dist = Math.toDegrees(dist);
+            dist = dist * 60 * 1.1515 * 1.609344;
+            return (dist);
+        }
     }
 
 

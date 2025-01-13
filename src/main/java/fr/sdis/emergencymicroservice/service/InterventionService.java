@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class InterventionService {
@@ -43,26 +44,26 @@ public class InterventionService {
                 break;
             }
 
-            boolean alreadyExist = false;:
+            boolean alreadyExist = false;
 
             for (Feu feuActif : reponse) {
-                if (feuActif.getCoorX() == feuCreated.getCoorX() && feuActif.getCoorY() == feuCreated.getCoorY()) {
+                //log de la condition suivante
+                System.out.println("Feu actif : " + feuActif);
+                System.out.println("Feu créé : " + feuCreated);
+                if (Objects.equals(feuActif.getCoorX(), feuCreated.getCoorX()) && Objects.equals(feuActif.getCoorY(), feuCreated.getCoorY())) {
                     alreadyExist = true;
+                    System.out.println("Feu déjà existaaaaaaaaaaaaaaant");
                     break;
                 }
             }
             if(!alreadyExist){
-                feuBDD = feuClient.createFeu(feu);
+                feuBDD = feuClient.createFeu(feuCreated);
 
-                Caserne caserne = caserneService.getCaserneProche(feu.getCoorX(), feu.getCoorY()); //sup
+                Caserne caserne = caserneService.getCaserneProche(feuCreated.getCoorX(), feuCreated.getCoorY()); //sup
                 System.out.println("Caserne la plus proche : " + caserne);
                 Camion camion = new Camion();
 
-                List<Double[]> trajet = trajetClient.getTrajet(caserne.getCoorX(), caserne.getCoorY(), feu.getCoorX(), feu.getCoorY());
-
-                for (Double[] coord : trajet) {
-                    System.out.println("Lat: " + coord[0] + ", Lon: " + coord[1]);
-                }
+                List<Double[]> trajet = trajetClient.getTrajet(caserne.getCoorX(), caserne.getCoorY(), feuCreated.getCoorX(), feuCreated.getCoorY());
 
                 //creer une intervention
                 Intervention intervention = new Intervention(0, camion, feuBDD, caserne, trajet, 30000, null);

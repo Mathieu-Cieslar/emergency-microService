@@ -60,10 +60,11 @@ public class FeuClient {
         }
     }
 
+
     public List<Feu> getFeuxIsActif() {
         String reponse = null;
         try{
-            reponse = restTemplate.getForObject(apiUrl+"/progress", String.class);
+            reponse = restTemplate.getForObject(apiUrl+"/actif", String.class);
             System.out.println(reponse);
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la récupération des is Progress feux", e);
@@ -71,7 +72,7 @@ public class FeuClient {
 
         try {
             // Désérialisation
-            return objectMapper.readValue(reponse, new TypeReference<Feu>() {});
+            return objectMapper.readValue(reponse, new TypeReference<List<Feu>>() {});
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la conversion en JSON", e);
         }
