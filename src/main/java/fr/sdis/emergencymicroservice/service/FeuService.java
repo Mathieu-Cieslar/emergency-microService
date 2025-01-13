@@ -22,6 +22,7 @@ public class FeuService {
 
     public Feu createFeuByCaptors() {
         List<Capteur> capteurs = capteurClient.getCapteurs();
+
         capteurs.sort((c1, c2) -> Double.compare(c2.getValeur(), c1.getValeur()));
         //trie de ma liste capteurs en fonction de l'intensite
         System.out.println(capteurs);
